@@ -13,11 +13,21 @@ import { Button } from '@/components/ui/button';
 // import { deleteUser } from './actions';
 import { useRouter } from 'next/navigation';
 
+export type userType = {
+  id: number;
+  name: string;
+  filters: string;
+  type: string;
+  recipients: string;
+  status: string;
+  template: string;
+};
+
 export function TableList({
-  // users,
+  users,
   offset
 }: {
-  // users: SelectUser[];
+  users: userType[];
   offset: number | null;
 }) {
   const router = useRouter();
@@ -43,9 +53,9 @@ export function TableList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* {users.map((user) => (
+            {users.map((user) => (
               <UserRow key={user.id} user={user} />
-            ))} */}
+            ))}
           </TableBody>
         </Table>
       </form>
@@ -62,24 +72,18 @@ export function TableList({
   );
 }
 
-function UserRow({ user }: { user: SelectUser }) {
-  const userId = user.id;
-  // const deleteUserWithId = deleteUser.bind(null, userId);
-
+function UserRow({ user }: { user: UserType }) {
   return (
     <TableRow>
       <TableCell className="font-medium">{user.name}</TableCell>
-      <TableCell className="hidden md:table-cell">{user.email}</TableCell>
-      <TableCell>{user.username}</TableCell>
+      <TableCell className="hidden md:table-cell">{user.filters}</TableCell>
+      <TableCell>{user.type}</TableCell>
+      <TableCell>{user.recipients}</TableCell>
+      <TableCell>{user.status}</TableCell>
+      <TableCell>{user.template}</TableCell>
       <TableCell>
-        <Button
-          className="w-full"
-          size="sm"
-          variant="outline"
-          // formAction={deleteUserWithId}
-          disabled
-        >
-          Delete
+        <Button className="w-full" size="sm" variant="outline">
+          :
         </Button>
       </TableCell>
     </TableRow>

@@ -225,7 +225,7 @@ export default function IndexPage() {
       const response = await fetch('/api/mailersend/getTemplates');
       const data: MailerSendTemplateType[] = await response.json();
       setTemplates(data);
-    } catch (error) {
+    } catch (error: any) {
       console.log('Error fetching templates', error.message);
     }
   };

@@ -3,6 +3,18 @@ import { TableList } from '@/components/table';
 import { Search } from '@/components/search';
 import { CompaignBtn } from '@/components/compaign';
 
+const users = [
+  {
+    id: 1,
+    name: 'josh',
+    filters: '121323',
+    type: 'newtype',
+    recipients: 'goood',
+    status: 'hello',
+    template: 'check'
+  }
+];
+
 export default async function IndexPage({
   searchParams
 }: {
@@ -22,7 +34,7 @@ export default async function IndexPage({
         </div>
         <CompaignBtn />
       </section>
-      <TableList users={[]} offset={24} />
+      <TableList users={users} offset={24} />
     </main>
   );
 }
