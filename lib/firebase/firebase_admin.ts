@@ -1,11 +1,13 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('./service-account-file.json');
+import admin from 'firebase-admin';
+import serviceAccount from './service-account-file.json';
 
+// Ensure the correct type for the service account
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
     databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE
   });
 }
 
-module.exports = admin;
+const db = admin.firestore();
+export { db, admin };
