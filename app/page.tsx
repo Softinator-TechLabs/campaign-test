@@ -1,7 +1,6 @@
-// import { getUsers } from '@/lib/db';
-import { TableList } from '@/components/table';
-import { Search } from '@/components/search';
-import { CompaignBtn } from '@/components/compaign';
+import { CompaignBtn } from './(homepage)/_components/compaign';
+import { Search } from './(homepage)/_components/search';
+import { TableList } from './(homepage)/_components/table';
 
 const users = [
   {
@@ -15,14 +14,11 @@ const users = [
   }
 ];
 
-export default async function IndexPage({
+export default function IndexPage({
   searchParams
 }: {
   searchParams: { q: string; offset: string };
 }) {
-  const search = searchParams.q ?? '';
-  const offset = searchParams.offset ?? 0;
-  // const { users, newOffset } = await getUsers(search, Number(offset));
   return (
     <main className="flex flex-1 flex-col p-4 md:p-6">
       <div className="flex items-center mb-8">

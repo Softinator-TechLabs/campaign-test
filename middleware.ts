@@ -1,24 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { verifyIdToken } from './lib/firebase/firebase_admin';
 
-// export async function middleware(req: NextRequest) {
-//   const token = req.cookies.get('token')?.value; // Assuming token is stored in cookies
+export async function middleware(req: NextRequest) {
+  const tokenCookie = req.cookies.get('token');
 
-//   if (!token) {
-//     return NextResponse.redirect(new URL('/signin', req.url));
-//   }
+  if (!tokenCookie) {
+    return NextResponse.redirect(new URL('/signin', req.url));
+  }
 
-//   try {
-//     return NextResponse.next();
-//   } catch (error: any) {
-//     const url = req.nextUrl.clone();
-//     url.pathname = '/signin';
-//     return NextResponse.redirect(url);
-//   }
-// }
+  const token = tokenCookie.value;
 
-// export const config = {
-//   matcher: ['/'] // Protect these routes
-// };
+  try {
+    // const decodedToken = await admin.auth().verifyIdToken(token);
+    // if (decodedToken.admin) {
+    //   return NextResponse.next();
+    // } else {
+    //   return NextResponse.redirect(new URL('/signin', req.url));
+    // }
+    const response = await fetch(
+      `${req.nextUrl.origin}/api/firebase/verify-token`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` // Send the token in the Authorization header
+        }
+      }
+    );
+    const result = await response.json();
+    if (result.Error === 'no-error') {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(new URL('/signin', req.url));
+    }
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return NextResponse.redirect(new URL('/signin', req.url));
+  }
+}
 
-export async function middleware(req: NextRequest) {}
+export const config = {
+  matcher: ['/((?!_next/static|api|signin).*)']
+};

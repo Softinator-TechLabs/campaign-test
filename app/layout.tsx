@@ -1,12 +1,11 @@
-import './globals.css';
-
+import '@/public/css/globals.css';
 import Link from 'next/link';
 import { Analytics } from '@vercel/analytics/react';
 import { Logo, UsersIcon } from '@/components/icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { UserAuth } from '@/components/authentication';
-import { NavItem } from '@/components/navbar';
 import { AuthProvider } from '@/context/authContext';
+import { NavItem } from './(homepage)/_components/navbar';
 
 export const metadata = {
   title: 'Campaign admin panel',

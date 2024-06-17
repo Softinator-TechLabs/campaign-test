@@ -6,18 +6,17 @@ import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/authContext';
 import { signOut as firebaseSignOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase/firebase_client';
 
 export function UserAuth() {
   const pathname = usePathname();
   const { user } = useAuth();
-  console.log('user', user);
   const router = useRouter();
-  const auth = false;
   if (pathname == '/signin') {
     return null;
   }
 
-  if (!auth) {
+  if (!user) {
     return (
       <Button variant="outline" onClick={() => router.push('/signin')}>
         Sign In
@@ -26,7 +25,13 @@ export function UserAuth() {
   }
 
   const signOut = async () => {
-    await firebaseSignOut(auth);
+    try {
+      await firebaseSignOut(auth);
+      router.push('/signin');
+      document.cookie = 'token=; path=/; max-age=0';
+    } catch (error) {
+      console.log('error signing out');
+    }
   };
 
   return (

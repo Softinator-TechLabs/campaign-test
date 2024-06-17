@@ -1,13 +1,13 @@
 'use client';
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-
-import { auth } from '@/lib/firebase/firebase_client';
+import { auth } from '@/lib/firebase/firebase_client'; // Ensure this path is correct
 
 interface AuthContextProps {
   user: User | null;
   loading: boolean;
+  settingUpUser: (value: User | null) => void;
+  setLoading: (value: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -16,19 +16,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true); // Start with loading true
+
+  const settingUpUser = (value: User | null): void => {
+    setUser(value);
+  };
 
   useEffect(() => {
+    console.log('Setting up onAuthStateChanged listener');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+      console.log('Auth state changed, user is:', user);
+      if (user) {
+        setUser(user);
+        setLoading(false);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      console.log('Cleaning up onAuthStateChanged listener');
+      unsubscribe();
+    };
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, settingUpUser, setLoading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

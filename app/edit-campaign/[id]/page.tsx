@@ -38,6 +38,7 @@ type MailerSendTemplateType = {
 
 export default function IndexPage() {
   const [selectedTicket, setSelectedTicket] = useState('Ticket');
+  //   const colletionRef = collection(db, 'tickets');
   const [templates, setTemplates] = useState<MailerSendTemplateType[]>([]);
   const [filterOptions, setFilterOptions] = useState<Partial<FilterType>>({
     noAccout: true,
@@ -228,14 +229,36 @@ export default function IndexPage() {
     }
   };
 
-  const test = async () => {
-    await fetch('/api/test');
-  };
+  //   const test = async () => {
+  //     await fetch('/api/test');
+  //   };
 
   useEffect(() => {
     fetchTemplates();
-    test();
+    // test();
   }, []);
+
+  //   useEffect(() => {
+  //     // const q = query(
+  //     //   colletionRef,
+  //     //   //  where('owner', '==', currentUserId),
+  //     //   where('title', '==', 'School1') // does not need index
+  //     //   //  where('score', '<=', 100) // needs index  https://firebase.google.com/docs/firestore/query-data/indexing?authuser=1&hl=en
+  //     //   // orderBy('score', 'asc'), // be aware of limitations: https://firebase.google.com/docs/firestore/query-data/order-limit-data#limitations
+  //     //   // limit(1)
+  //     // );
+
+  //     // const unsub = onSnapshot(q, (querySnapshot) => {
+  //     const unsub = onSnapshot(colletionRef, (querySnapshot) => {
+  //       const items = [];
+  //       querySnapshot.forEach((doc) => {
+  //         items.push(doc.data());
+  //       });
+  //     });
+  //     return () => {
+  //       unsub();
+  //     };
+  //   }, []);
 
   return (
     <main className="flex flex-col p-4 md:p-6 justify-center items-center">
