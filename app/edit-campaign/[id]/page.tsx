@@ -1,4 +1,3 @@
-import { sendEmail } from '@/lib/mailersend/sendMail';
 import CampForm from '@/components/campaign-form';
 import { getTemplates } from '@/lib/mailersend/getTemplates';
 import { EditCampaign } from './action';
