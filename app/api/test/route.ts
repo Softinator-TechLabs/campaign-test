@@ -37,8 +37,77 @@ export async function GET(request: Request) {
   // } catch (error: any) {
   //   console.error('Error creating new user:', error);
   // }
-  Response.json({});
+
+  try {
+    const campaignCollection = db.collection('campaigns');
+    const snapshot = await campaignCollection.get();
+
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+      return;
+    }
+
+    const campaigns: any[] = [];
+    snapshot.forEach((doc) => {
+      campaigns.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log('Campaigns:', campaigns);
+  } catch (error) {
+    console.error('Error getting documents:', error);
+  }
+
+  // auth
+  //   .getUserByEmail('anand@softinator.com')
+  //   .then((userRecord) => {
+  //     return auth.updateUser(userRecord.uid, {
+  //       password: 'ananddudi'
+  //     });
+  //   })
+  //   .then((userRecord) => {
+  //     console.log('Successfully updated user:', userRecord.toJSON());
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error updating user:', error);
+  //   });
+  return Response.json({});
 }
+
+// Campaigns: [
+//   {
+//     id: 'tGK9zsJDumr47Nx7Gmoo',
+//     compaignName: 'Test',
+//     delivery: 'Online',
+//     ticketNotComplete: false,
+//     ticketNotAssign: false,
+//     tamplateId: '',
+//     orderUnpaid: false,
+//     noAccount: false,
+//     ticketType: 'Talks',
+//     type: 'ticket',
+//     totalCount: 248
+//   }
+// ];
+
+// Campaign: [
+//   {
+//     id: '9idyQdSFW4T87Psw0Mle',
+//     name: 'final',
+//     selectedTicket: 'Ticket',
+//     selectedTemplate: 'Automation - chaseTicketAssignedNoDetails',
+//     filterOptions: {
+//       TicketNotAssigned: false,
+//       delivery: [Array],
+//       selectedTicketType: 'Talks + Workshops',
+//       ticketType: [Array],
+//       ticketNotCompleted: true,
+//       OrderUnpaid: false,
+//       selectedDelivery: 'Online',
+//       noAccout: true
+//     },
+//     status: 'In-Progress'
+//   }
+// ];
 
 // User created successfully: UserRecord {
 //   uid: 'm8lqyFamfccBCyt5y1e71rbJp2E2',

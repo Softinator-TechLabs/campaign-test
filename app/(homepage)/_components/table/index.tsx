@@ -32,7 +32,7 @@ type Campaign = {
   template: string;
 };
 
-export function TableList({ offset }: { offset: number | null }) {
+export function CampaignData({ offset }: { offset: number | null }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const router = useRouter();
 
@@ -40,8 +40,12 @@ export function TableList({ offset }: { offset: number | null }) {
     router.replace(`/?offset=${offset}`);
   }
 
+  // const test = async () => {
+  //   await fetch('/api/test');
+  // };
   useEffect(() => {
-    const campaignsCollection = collection(db, 'campaign');
+    // test();
+    const campaignsCollection = collection(db, 'campaigns');
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {
         const data = doc.data();

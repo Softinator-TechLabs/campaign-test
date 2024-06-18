@@ -1,8 +1,8 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { serverTimestamp } from 'firebase/firestore';
-import { CustomEmailParams } from '@/lib/mailersend/sendMail';
+import { useFormState } from 'react-dom';
 
 type FilterType = {
   noAccout: boolean;
@@ -23,13 +23,29 @@ type MailerSendTemplateType = {
   variables: object;
 };
 
-type mailesend = (object: CustomEmailParams) => Promise<void>;
+type propsType = {
+  id?: string;
+  mode: string;
+  campaignAction: (
+    prev: any,
+    formData: FormData
+  ) => Promise<{ mode: any; error: boolean; message: any }>;
+  templates: MailerSendTemplateType[];
+};
 
-const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
-  const [campaignName, setCampaignName] = useState('');
+export default function CampForm({
+  id,
+  mode,
+  templates,
+  campaignAction
+}: propsType) {
+  const [state, formAction] = useFormState(campaignAction, {
+    mode: mode,
+    message: '',
+    error: false
+  });
+  const [clickedBtn, setclickedBtn] = useState('');
   const [selectedTicket, setSelectedTicket] = useState('Ticket');
-  const [templates, setTemplates] = useState<MailerSendTemplateType[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | ''>('');
   const [filterOptions, setFilterOptions] = useState<Partial<FilterType>>({
     noAccout: true,
     ticketNotCompleted: false,
@@ -87,6 +103,7 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
         break;
     }
   };
+
   const checkboxes = () => {
     if (selectedTicket === 'Ticket') {
       return (
@@ -208,28 +225,16 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
     setFilterOptions((prev) => ({ ...prev, [type]: checked }));
   };
 
-  const fetchTemplates = async () => {
-    try {
-      const response = await fetch('/api/mailersend/getTemplates');
-      const data: MailerSendTemplateType[] = await response.json();
-      setTemplates(data);
-    } catch (error: any) {
-      console.log('Error fetching templates', error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
-
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" action={formAction}>
+      <input type="hidden" name="newid" value={id} />
       <div className="flex flex-row">
         <label className="block text-sm font-medium text-gray-700 basis-2/4">
           Campaign Name
         </label>
         <input
           type="text"
+          name="campaignName"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 basis-2/4 focus:border-indigo-500 sm:text-sm"
         />
       </div>
@@ -239,6 +244,7 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
         </label>
         <select
           value={selectedTicket}
+          name="selectedTicket"
           onChange={(e) => handleChange(e, 'Type')}
           className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
@@ -256,6 +262,7 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
             <>
               <div className="my-3">
                 <select
+                  name="delivery"
                   value={filterOptions.selectedDelivery}
                   onChange={(e) => handleChange(e, 'Delivery')}
                   className="mt-1 block w-full px-3 basis-2/4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -273,6 +280,7 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
               <div className="mt-3">
                 <select
                   value={filterOptions.selectedTicketType}
+                  name="ticketType"
                   onChange={(e) => handleChange(e, 'Ticket Type')}
                   className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 >
@@ -295,12 +303,14 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
         <label className="block text-sm font-medium text-gray-700 basis-2/4">
           Mailersend template
         </label>
-        <select className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-          <option>Ticket</option>
+        <select
+          name="template"
+          className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
           {templates.length > 0 &&
-            templates.map(({ name }, index) => {
+            templates.map(({ name, id }, index) => {
               return (
-                <option key={index} value={name}>
+                <option key={id} value={id}>
                   {name}
                 </option>
               );
@@ -323,16 +333,20 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
           Cancel
         </button>
         <button
-          type="button"
-          onClick={() =>
-            sendEmail({
-              from: '',
-              fromName: '',
-              to: '',
-              name: '',
-              templateId: ''
-            })
-          }
+          name="button"
+          type="submit"
+          value={clickedBtn}
+          onClick={() => setclickedBtn('save')}
+          // onClick={handleSave}
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setclickedBtn('schedule')}
+          name="button"
+          type="submit"
+          value={clickedBtn}
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Schedule
@@ -340,6 +354,4 @@ const EditForm = ({ sendEmail }: { sendEmail: mailesend }) => {
       </div>
     </form>
   );
-};
-
-export default EditForm;
+}

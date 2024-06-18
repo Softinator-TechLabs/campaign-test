@@ -1,10 +1,8 @@
-import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function middleware(req: NextRequest) {
-  console.log('middleware invoked');
   const tokenCookie = req.cookies.get('token');
 
   if (!tokenCookie) {
@@ -33,12 +31,9 @@ export async function middleware(req: NextRequest) {
     );
     const result = await response.json();
 
-    console.log('ran');
     if (result?.decodedToken.admin && result.Error == 'no-error') {
-      console.log('inside');
       return NextResponse.next();
     } else {
-      console.log('outside');
       const response = NextResponse.redirect(new URL('/signin', req.url));
       response.cookies.set('token', '', { maxAge: -1, path: '/' });
       return response;

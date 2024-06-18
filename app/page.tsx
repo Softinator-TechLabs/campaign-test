@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CompaignBtn } from './(homepage)/_components/compaign';
 import { Search } from './(homepage)/_components/search';
-import { TableList } from './(homepage)/_components/table';
+import { CampaignData } from './(homepage)/_components/table';
 import { Logo, UsersIcon } from '@/components/icons';
 import { NavItem } from './(homepage)/_components/navbar';
 import { UserAuth } from '@/components/authentication';
@@ -52,7 +52,7 @@ export default function IndexPage({
             </div>
             <CompaignBtn />
           </section>
-          <TableList offset={24} />
+          <CampaignData offset={24} />
         </main>
       </div>
     </div>
