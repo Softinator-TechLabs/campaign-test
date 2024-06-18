@@ -1,6 +1,8 @@
 'use server';
 
 import { FieldValue, db } from '@/lib/firebase/firebase_admin';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function EditCampaign(prev: any, formdata: FormData) {
   try {
@@ -31,7 +33,7 @@ export async function EditCampaign(prev: any, formdata: FormData) {
 
     const campaignData = {
       name: campaignName,
-      status: clickedBtn == 'save' ? 'In-Progress' : 'sent',
+      status: clickedBtn === 'save' ? 'In-Progress' : 'sent',
       selectedTicket,
       ticketType,
       filter: {
@@ -44,9 +46,12 @@ export async function EditCampaign(prev: any, formdata: FormData) {
       selectedTemplate: template,
       createdAt: FieldValue.serverTimestamp()
     };
+
     if (id) {
       const campaignRef = db.collection('campaigns').doc(id);
       await campaignRef.update(campaignData);
+      // revalidatePath('/');
+      // redirect('/'); it is not working in next 14.2.3
       return {
         mode: prev.mode,
         error: false,

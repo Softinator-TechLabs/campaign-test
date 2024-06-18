@@ -52,7 +52,7 @@ export function CampaignData({ offset }: { offset: number | null }) {
         const data = doc.data();
         return { id: doc.id, ...data };
       });
-      console.log('campaignData: ' + JSON.stringify(campaignData));
+      // console.log('campaignData: ' + JSON.stringify(campaignData));
       setCampaigns(campaignData);
     });
 

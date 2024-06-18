@@ -43,11 +43,7 @@ export async function addCampaign(prev: any, formdata: FormData) {
       selectedTemplate: template,
       createdAt: FieldValue.serverTimestamp()
     };
-
-    console.log('response got', campaignData);
-
-    const response = await db.collection('campaigns').add(campaignData);
-    console.log('response is', response);
+    await db.collection('campaigns').add(campaignData);
 
     return {
       mode: prev.mode,

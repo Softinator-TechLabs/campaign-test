@@ -1,40 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFormState } from 'react-dom';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase_client';
-
-type FilterType = {
-  noAccout: boolean;
-  ticketNotCompleted: boolean;
-  TicketNotAssigned: boolean;
-  OrderUnpaid: boolean;
-  delivery: string[];
-  ticketType: string[];
-  selectedDelivery: string;
-  selectedTicketType: string;
-};
-
-type MailerSendTemplateType = {
-  id: string;
-  image_path: string;
-  name: string;
-  type: string;
-  variables: object;
-};
-
-type propsType = {
-  id?: string;
-  mode: string;
-  campaignAction: (
-    prev: any,
-    formData: FormData
-  ) => Promise<{ mode: any; error: boolean; message: any }>;
-  templates: MailerSendTemplateType[];
-  defaultValues?: any;
-};
+import { FilterType, propsType } from './types';
 
 export default function CampForm({
   id,
@@ -48,7 +19,6 @@ export default function CampForm({
     message: '',
     error: false
   });
-
   const [totalCount, setTotalCounts] = useState(0);
   const [clickedBtn, setclickedBtn] = useState('');
   const [selectedTicket, setSelectedTicket] = useState('Ticket');
@@ -279,6 +249,12 @@ export default function CampForm({
 
     return () => unsubscribe();
   }, [filterOptions]);
+
+  useLayoutEffect(() => {
+    if (state.error == false && state.message == 'success') {
+      router.push('/');
+    }
+  }, [state]);
 
   return (
     <form className="space-y-6" action={formAction}>
