@@ -8,7 +8,11 @@ const getCampaignData = async (id: string) => {
   try {
     const campaignDoc = await db.collection('campaigns').doc(id).get();
     if (campaignDoc.exists) {
-      return campaignDoc.data();
+      const data = campaignDoc.data();
+      if (data?.createdAt) {
+        data.createdAt = data.createdAt.toDate().toISOString();
+      }
+      return data;
     } else {
       console.error('No such document!');
       return null;
@@ -20,8 +24,6 @@ const getCampaignData = async (id: string) => {
 };
 
 export default async function IndexPage({ params }: { params: any }) {
-  //get data for campaign and pass to campForm component
-
   return (
     <main className="flex flex-col p-4 md:p-6 justify-center items-center h-screen">
       <section className="flex flex-col w-75">

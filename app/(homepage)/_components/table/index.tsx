@@ -50,7 +50,7 @@ export function CampaignData({ offset }: { offset: number | null }) {
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {
         const data = doc.data();
-        return { ...data };
+        return { id: doc.id, ...data };
       });
       console.log('campaignData: ' + JSON.stringify(campaignData));
       setCampaigns(campaignData);

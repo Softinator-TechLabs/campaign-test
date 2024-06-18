@@ -53,12 +53,12 @@ export default function CampForm({
   const [clickedBtn, setclickedBtn] = useState('');
   const [selectedTicket, setSelectedTicket] = useState('Ticket');
   const [filterOptions, setFilterOptions] = useState<Partial<FilterType>>({
-    noAccout: true,
-    ticketNotCompleted: false,
-    TicketNotAssigned: false,
-    OrderUnpaid: false,
-    selectedDelivery: '',
-    selectedTicketType: '',
+    noAccout: defaultValues.filter?.noAccount || true,
+    ticketNotCompleted: defaultValues.filter?.ticketNotCompleted || false,
+    TicketNotAssigned: defaultValues.filter?.ticketNotAssigned || false,
+    OrderUnpaid: defaultValues.filter?.orderUnpaid || false,
+    selectedDelivery: defaultValues.filter?.delivery || '',
+    selectedTicketType: defaultValues.ticketType || '',
     delivery: ['In-Person', 'Online'],
     ticketType: [
       'Talks',
@@ -119,9 +119,6 @@ export default function CampForm({
               <input
                 name="no-account"
                 type="checkbox"
-                defaultChecked={
-                  defaultValues?.noAccount ? defaultValues.noAccount : false
-                }
                 checked={filterOptions.noAccout}
                 onChange={(e) => handleCheckboxes(e, 'No Account')}
                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
@@ -143,11 +140,6 @@ export default function CampForm({
                 id="ticket-not-completed"
                 name="ticket-not-completed"
                 type="checkbox"
-                defaultChecked={
-                  defaultValues?.ticketNotCompleted
-                    ? defaultValues.ticketNotCompleted
-                    : false
-                }
                 checked={filterOptions.ticketNotCompleted}
                 onChange={(e) => handleCheckboxes(e, 'Ticket Not Completed')}
                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
@@ -174,11 +166,6 @@ export default function CampForm({
                 name="ticket-not-assigned"
                 id="ticket-not-assigned"
                 type="checkbox"
-                defaultChecked={
-                  defaultValues?.ticketNotAssigned
-                    ? defaultValues.ticketNotAssigned
-                    : false
-                }
                 checked={filterOptions.TicketNotAssigned}
                 onChange={(e) => handleCheckboxes(e, 'Ticket Not Assigned')}
                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
@@ -200,9 +187,6 @@ export default function CampForm({
                 id="order-unpaid"
                 name="order-unpaid"
                 type="checkbox"
-                defaultChecked={
-                  defaultValues?.orderUnpaid ? defaultValues.orderUnpaid : false
-                }
                 checked={filterOptions.OrderUnpaid}
                 onChange={(e) => handleCheckboxes(e, 'Order Unpaid')}
                 className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
@@ -305,9 +289,7 @@ export default function CampForm({
         </label>
         <input
           type="text"
-          defaultValue={
-            defaultValues?.campaignName ? defaultValues?.campaignName : ''
-          }
+          defaultValue={defaultValues?.name ? defaultValues?.name : ''}
           name="campaignName"
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 basis-2/4 focus:border-indigo-500 sm:text-sm"
         />
@@ -386,12 +368,16 @@ export default function CampForm({
           Mailersend template
         </label>
         <select
-          defaultValue={defaultValues?.template ? defaultValues.template : ''}
+          defaultValue={
+            defaultValues?.selectedTemplate
+              ? defaultValues.selectedTemplate
+              : ''
+          }
           name="template"
           className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           {templates.length > 0 &&
-            templates.map(({ name, id }, index) => {
+            templates.map(({ name, id }) => {
               return (
                 <option key={id} value={id}>
                   {name}
@@ -420,7 +406,6 @@ export default function CampForm({
           type="submit"
           value={clickedBtn}
           onClick={() => setclickedBtn('save')}
-          // onClick={handleSave}
           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Save

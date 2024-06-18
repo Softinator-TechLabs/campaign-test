@@ -60,6 +60,7 @@ export async function EditCampaign(prev: any, formdata: FormData) {
       };
     }
   } catch (error: any) {
+    console.log('Error updating campaign', error.message);
     return {
       mode: prev.mode,
       error: true,
