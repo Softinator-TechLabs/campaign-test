@@ -42,6 +42,7 @@ export function CampaignData({ offset }: { offset: number | null }) {
   }
 
   useEffect(() => {
+    //for real time usage
     const campaignsCollection = collection(db, 'campaigns');
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {
@@ -118,7 +119,10 @@ function TableBodyComponent({ campaigns }: { campaigns: any[] }) {
                 <span className="sr-only">Actions</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem
+                  asChild
+                  disabled={campaign.status == 'In-Progress' ? false : true}
+                >
                   <Link href={`/edit-campaign/${campaign.id}`}>Edit</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
