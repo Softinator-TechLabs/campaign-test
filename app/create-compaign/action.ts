@@ -28,7 +28,8 @@ export async function addCampaign(prev: any, formdata: FormData) {
       ticketNotAssigned,
       orderUnpaid
     );
-    await db.collection('campaign').add({
+
+    const campaignData = {
       name: campaignName,
       status: clickedBtn == 'save' ? 'In-Progress' : 'complete',
       selectedTicket,
@@ -42,8 +43,8 @@ export async function addCampaign(prev: any, formdata: FormData) {
       },
       selectedTemplate: template,
       createdAt: serverTimestamp()
-    });
-
+    };
+    await db.collection('campaign').add(campaignData);
     return {
       mode: prev.mode,
       error: false,

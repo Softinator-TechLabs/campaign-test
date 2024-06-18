@@ -11,9 +11,17 @@ const getTemplate = async () => {
   }
 };
 
+// const wait = () =>
+//   new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//       resolve();
+//     }, 5000);
+//   });
+
 export default async function IndexPage() {
+  // await wait(); to check Loader
   return (
-    <main className="flex flex-col p-4 md:p-6 justify-center items-center">
+    <main className="flex flex-col p-4 md:p-6 justify-center items-center h-screen">
       <section className="flex flex-col w-75">
         <div className="flex items-center mb-8">
           <h1 className="font-semibold text-lg md:text-2xl">Add Campaign</h1>

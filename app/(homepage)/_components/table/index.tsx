@@ -60,7 +60,6 @@ export function CampaignData({ offset }: { offset: number | null }) {
         };
       }) as Campaign[];
       setCampaigns(campaignData);
-      console.log('data', campaignData);
     });
 
     return () => unsubscribe();
