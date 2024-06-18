@@ -1,40 +1,22 @@
 'use client';
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/react-dropdown-menu';
-import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { MoreVertical } from 'lucide-react';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense, lazy } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/firebase_client';
 
-type Campaign = {
-  id: string;
-  name: string;
-  filter: object;
-  type: string;
-  recipients: string;
-  status: string;
-  template: string;
-  selectedTicket: string;
-};
+const TableBodyComponent = lazy(() => import('./tableData'));
 
 export function CampaignData({ offset }: { offset: number | null }) {
-  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[] | null>(null);
   const router = useRouter();
 
   function onClick() {
@@ -42,7 +24,7 @@ export function CampaignData({ offset }: { offset: number | null }) {
   }
 
   useEffect(() => {
-    //for real time usage
+    // for real-time data other we could use data from parent server components
     const campaignsCollection = collection(db, 'campaigns');
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {
@@ -55,6 +37,10 @@ export function CampaignData({ offset }: { offset: number | null }) {
 
     return () => unsubscribe();
   }, []);
+
+  if (!campaigns) {
+    return <div>Loading Data...</div>; // Or a spinner or any other loading indicator
+  }
 
   return (
     <>
@@ -74,7 +60,9 @@ export function CampaignData({ offset }: { offset: number | null }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableBodyComponent campaigns={campaigns} />
+            <Suspense fallback={<div>Loading Table Data...</div>}>
+              <TableBodyComponent campaigns={campaigns} />
+            </Suspense>
           </TableBody>
         </Table>
       </form>
@@ -87,49 +75,6 @@ export function CampaignData({ offset }: { offset: number | null }) {
           Next Page
         </Button>
       )}
-    </>
-  );
-}
-
-function TableBodyComponent({ campaigns }: { campaigns: any[] }) {
-  return (
-    <>
-      {campaigns.map((campaign, index) => (
-        <TableRow key={index}>
-          <TableCell>{campaign.name}</TableCell>
-          <TableCell>
-            {campaign?.filter
-              ? Object.entries(campaign.filter)
-                  .map(([key, value]) => `${key}: ${value}`)
-                  .join(', ')
-              : ''}
-          </TableCell>
-          <TableCell>{campaign.selectedTicket}</TableCell>
-          <TableCell>{campaign.recipients}</TableCell>
-          <TableCell>{campaign.status}</TableCell>
-          <TableCell>
-            {campaign.templateName
-              ? campaign.templateName
-              : campaign.selectedTemplate}
-          </TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-                <span className="sr-only">Actions</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  asChild
-                  disabled={campaign.status == 'In-Progress' ? false : true}
-                >
-                  <Link href={`/edit-campaign/${campaign.id}`}>Edit</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-      ))}
     </>
   );
 }
