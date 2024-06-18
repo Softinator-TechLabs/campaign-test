@@ -41,11 +41,11 @@ export function CampaignData({ offset }: { offset: number | null }) {
     router.replace(`/?offset=${offset}`);
   }
 
-  const test = async () => {
-    await fetch('/api/test');
-  };
+  // const test = async () => {
+  //   await fetch('/api/test');
+  // };
   useEffect(() => {
-    test();
+    // test();
     const campaignsCollection = collection(db, 'campaigns');
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {

@@ -45,7 +45,7 @@ export async function EditCampaign(prev: any, formdata: FormData) {
       createdAt: FieldValue.serverTimestamp()
     };
     if (id) {
-      const campaignRef = db.collection('campaign').doc(id);
+      const campaignRef = db.collection('campaigns').doc(id);
       await campaignRef.update(campaignData);
       return {
         mode: prev.mode,
