@@ -1,5 +1,7 @@
 const Loading = () => {
-  return <div>loading please wait....</div>;
+  return (
+    <div className="flex justify-center h-full">loading please wait....</div>
+  );
 };
 
 export default Loading;

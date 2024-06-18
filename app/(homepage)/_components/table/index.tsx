@@ -4,8 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/react-dropdown-menu';
 import {
@@ -20,9 +18,12 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { MoreVertical } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase/firebase_client';
 
 type Campaign = {
-  id: number;
+  id: string;
   name: string;
   filters: string;
   type: string;
@@ -31,17 +32,35 @@ type Campaign = {
   template: string;
 };
 
-export function TableList({
-  users,
-  offset
-}: {
-  users: Campaign[];
-  offset: number | null;
-}) {
+export function TableList({ offset }: { offset: number | null }) {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const router = useRouter();
+
   function onClick() {
     router.replace(`/?offset=${offset}`);
   }
+
+  useEffect(() => {
+    const campaignsCollection = collection(db, 'campaign');
+    const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
+      const campaignData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || '',
+          filters: data.filters || '',
+          type: data.type || '',
+          recipients: data.recipients || '',
+          status: data.status || '',
+          template: data.template || ''
+        };
+      }) as Campaign[];
+      setCampaigns(campaignData);
+      console.log('data', campaignData);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -61,7 +80,7 @@ export function TableList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableBodyComponent campaigns={users} />
+            <TableBodyComponent campaigns={campaigns} />
           </TableBody>
         </Table>
       </form>
@@ -97,7 +116,7 @@ function TableBodyComponent({ campaigns }: { campaigns: Campaign[] }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem asChild>
-                  <Link href={`/edit-campaign/${1}`}>Edit</Link>
+                  <Link href={`/edit-campaign/${campaign.id}`}>Edit</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,7 +1,8 @@
 'use client';
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase/firebase_client'; // Ensure this path is correct
+import { auth } from '@/lib/firebase/firebase_client';
 
 interface AuthContextProps {
   user: User | null;
@@ -16,8 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Start with loading true
-
+  const [loading, setLoading] = useState<boolean>(true);
   const settingUpUser = (value: User | null): void => {
     setUser(value);
   };
@@ -28,11 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log('Auth state changed, user is:', user);
       if (user) {
         setUser(user);
-        setLoading(false);
       } else {
         setUser(null);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => {

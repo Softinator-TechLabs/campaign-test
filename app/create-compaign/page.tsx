@@ -2,20 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  doc,
-  onSnapshot,
-  updateDoc,
-  setDoc,
-  deleteDoc,
-  collection,
-  serverTimestamp,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit
-} from 'firebase/firestore';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/firebase_client';
 
 type FilterType = {
   noAccout: boolean;
@@ -37,8 +25,10 @@ type MailerSendTemplateType = {
 };
 
 export default function IndexPage() {
+  const [campaignName, setCampaignName] = useState('');
   const [selectedTicket, setSelectedTicket] = useState('Ticket');
   const [templates, setTemplates] = useState<MailerSendTemplateType[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | ''>('');
   const [filterOptions, setFilterOptions] = useState<Partial<FilterType>>({
     noAccout: true,
     ticketNotCompleted: false,
@@ -228,13 +218,40 @@ export default function IndexPage() {
     }
   };
 
-  const test = async () => {
-    await fetch('/api/test');
+  const handleSave = async () => {
+    try {
+      const campaignData = {
+        name: campaignName,
+        status: 'In-Progress',
+        selectedTicket,
+        filterOptions,
+        selectedTemplate,
+        createdAt: serverTimestamp()
+      };
+
+      const response = await fetch('/api/firebase/add-campaign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(campaignData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error saving campaign');
+      }
+
+      const result = await response.json();
+      console.log('Campaign saved successfully:', result.campaignId);
+      router.push('/');
+      router.refresh();
+    } catch (error: any) {
+      console.log('Error saving campaign:', error.message);
+    }
   };
 
   useEffect(() => {
     fetchTemplates();
-    test();
   }, []);
 
   return (
@@ -250,6 +267,10 @@ export default function IndexPage() {
             </label>
             <input
               type="text"
+              value={campaignName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setCampaignName(e.target.value)
+              }
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 basis-2/4 focus:border-indigo-500 sm:text-sm"
             />
           </div>
@@ -315,8 +336,11 @@ export default function IndexPage() {
             <label className="block text-sm font-medium text-gray-700 basis-2/4">
               Mailersend template
             </label>
-            <select className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              <option>Ticket</option>
+            <select
+              onChange={(e) => setSelectedTemplate(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 basis-2/4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="Ticket">Ticket</option>
               {templates.length > 0 &&
                 templates.map(({ name }, index) => {
                   return (
@@ -344,6 +368,7 @@ export default function IndexPage() {
             </button>
             <button
               type="button"
+              onClick={handleSave}
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Save

@@ -27,8 +27,9 @@ export function UserAuth() {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      router.push('/signin');
       document.cookie = 'token=; path=/; max-age=0';
+      router.push('/signin');
+      router.refresh();
     } catch (error) {
       console.log('error signing out');
     }

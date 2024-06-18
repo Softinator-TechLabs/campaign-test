@@ -1,18 +1,10 @@
 'use client';
 
-// import { handleSignin } from './action';
-// import { useFormState } from 'react-dom';
-// const initialValue: FormState = {
-//   error: false,
-//   message: ''
-// };
-// const [state, formAction] = useFormState(handleSignin, initialValue);
-// action={formAction}
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase/firebase_client';
-import { useAuth } from '@/context/authContext';
 import { useRouter } from 'next/navigation';
+import { signOut as firebaseSignOut } from 'firebase/auth';
 
 export type FormState = {
   message: string;
@@ -20,9 +12,7 @@ export type FormState = {
 };
 
 const SignIn = () => {
-  const { settingUpUser } = useAuth();
   const [state, setState] = useState<FormState>({ message: '', error: false });
-
   const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,20 +27,24 @@ const SignIn = () => {
     }
 
     try {
+      await firebaseSignOut(auth);
       const response = await signInWithEmailAndPassword(auth, email, password);
+      console.log('respnse', response);
       const user = response.user;
-      const token = await user.getIdToken(); // Get the ID token
-      settingUpUser(user);
+      const token = await user.getIdToken();
+      // to ensure that the user is authenticated in case authStateChanged is not work
+      // settingUpUser(user);
       document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`;
       setState({ message: 'Success', error: false });
       router.push('/');
+      router.refresh();
     } catch (error: any) {
       setState({ message: error.message, error: true });
     }
   };
 
   return (
-    <div className="max-w-md mx-auto w-100 my-5">
+    <div className="max-w-md mx-auto w-100 h-full flex justify-center flex-column mt-[-20px]">
       <h2 className="text-xl font-semibold text-center mb-4">Sign In</h2>
       <form className="space-y-6" onSubmit={handleSignIn}>
         <div>
