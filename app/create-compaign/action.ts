@@ -1,7 +1,7 @@
 'use server';
 
 import { db, FieldValue } from '@/lib/firebase/firebase_admin';
-
+import { sendEmail } from '@/lib/mailersend/sendMail';
 export async function addCampaign(prev: any, formdata: FormData) {
   try {
     const ticketType = formdata.get('ticketType');
@@ -44,7 +44,28 @@ export async function addCampaign(prev: any, formdata: FormData) {
       createdAt: FieldValue.serverTimestamp()
     };
     await db.collection('campaigns').add(campaignData);
-
+    // sending emails once have enough data
+    if (clickedBtn == 'schedule') {
+      // sendEmail({
+      //   from: '',
+      //   fromName: '',
+      //   to: '',
+      //   name: '',
+      //   templateId: '',
+      //   info: {
+      //     ticket: {
+      //       ticketRef: '',
+      //       ticketType: '',
+      //       productName: '',
+      //       startAndEndDates: ''
+      //     },
+      //     order: {
+      //       orderId: '',
+      //       productName: ''
+      //     }
+      //   }
+      // });
+    }
     return {
       mode: prev.mode,
       error: false,

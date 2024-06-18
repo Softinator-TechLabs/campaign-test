@@ -8,6 +8,18 @@ export type CustomEmailParams = {
   to: string;
   name: string;
   templateId: string;
+  info: {
+    ticket: {
+      ticketRef: string;
+      ticketType: string;
+      productName: string;
+      startAndEndDates: string;
+    };
+    order: {
+      orderId: string;
+      productName: string;
+    };
+  };
 };
 
 export const sendEmail = async ({
@@ -15,7 +27,8 @@ export const sendEmail = async ({
   fromName,
   to,
   name,
-  templateId
+  templateId,
+  info
 }: CustomEmailParams) => {
   if (!mailerSend) {
     console.error('MailerSend is not initialized');
@@ -24,18 +37,33 @@ export const sendEmail = async ({
 
   const recipients = [new Recipient(to, name)];
 
-  // Prepare variables for the template
   const variables = [
     {
       email: to,
       substitutions: [
         {
-          var: 'name',
-          value: name
+          var: 'ticketRef',
+          value: info.ticket.ticketRef
         },
         {
-          var: 'custom_var',
-          value: 'Custom Value'
+          var: 'ticketType',
+          value: info.ticket.ticketType
+        },
+        {
+          var: 'productName',
+          value: info.ticket.productName
+        },
+        {
+          var: 'startAndEndDates',
+          value: info.ticket.startAndEndDates
+        },
+        {
+          var: 'orderId',
+          value: info.order.orderId
+        },
+        {
+          var: 'productName',
+          value: info.order.productName
         }
       ]
     }

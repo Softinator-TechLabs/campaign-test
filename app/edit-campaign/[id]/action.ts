@@ -2,6 +2,7 @@
 
 import { FieldValue, db } from '@/lib/firebase/firebase_admin';
 import { getTemplateById } from '@/lib/mailersend/getTemplates';
+import { sendEmail } from '@/lib/mailersend/sendMail';
 // import { revalidatePath } from 'next/cache';
 // import { redirect } from 'next/navigation';
 
@@ -40,7 +41,6 @@ export async function EditCampaign(prev: any, formdata: FormData) {
           }
         };
 
-    console.log('template', templateResponse);
     const campaignData = {
       name: campaignName,
       status: clickedBtn === 'save' ? 'In-Progress' : 'sent',
@@ -63,6 +63,29 @@ export async function EditCampaign(prev: any, formdata: FormData) {
       await campaignRef.update(campaignData);
       // revalidatePath('/');
       // redirect('/'); it is not working in next 14.2.3
+
+      // sending emails once have enough data
+      if (clickedBtn == 'schedule') {
+        // sendEmail({
+        //   from: '',
+        //   fromName: '',
+        //   to: '',
+        //   name: '',
+        //   templateId: '',
+        //   info: {
+        //     ticket: {
+        //       ticketRef: '',
+        //       ticketType: '',
+        //       productName: '',
+        //       startAndEndDates: ''
+        //     },
+        //     order: {
+        //       orderId: '',
+        //       productName: ''
+        //     }
+        //   }
+        // });
+      }
       return {
         mode: prev.mode,
         error: false,
