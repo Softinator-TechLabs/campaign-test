@@ -12,7 +12,7 @@ export default function CampForm({
   mode,
   templates,
   campaignAction,
-  defaultValues = {} // Provide a default empty object if undefined
+  defaultValues = {}
 }: propsType) {
   const [state, formAction] = useFormState(campaignAction, {
     mode: mode,

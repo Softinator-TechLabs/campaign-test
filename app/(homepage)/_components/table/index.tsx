@@ -110,7 +110,11 @@ function TableBodyComponent({ campaigns }: { campaigns: any[] }) {
           <TableCell>{campaign.selectedTicket}</TableCell>
           <TableCell>{campaign.recipients}</TableCell>
           <TableCell>{campaign.status}</TableCell>
-          <TableCell>{campaign.selectedTemplate}</TableCell>
+          <TableCell>
+            {campaign.templateName
+              ? campaign.templateName
+              : campaign.selectedTemplate}
+          </TableCell>
           <TableCell>
             <DropdownMenu>
               <DropdownMenuTrigger>

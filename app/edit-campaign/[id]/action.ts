@@ -1,8 +1,9 @@
 'use server';
 
 import { FieldValue, db } from '@/lib/firebase/firebase_admin';
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { getTemplateById } from '@/lib/mailersend/getTemplates';
+// import { revalidatePath } from 'next/cache';
+// import { redirect } from 'next/navigation';
 
 export async function EditCampaign(prev: any, formdata: FormData) {
   try {
@@ -10,7 +11,7 @@ export async function EditCampaign(prev: any, formdata: FormData) {
     const campaignName = formdata.get('campaignName');
     const selectedTicket = formdata.get('selectedTicket');
     const delivery = formdata.get('delivery');
-    const template = formdata.get('template');
+    const template = formdata.get('template') as string | null;
     const noAccount = formdata.get('no-account');
     const ticketNotCompleted = formdata.get('ticket-not-completed');
     const ticketNotAssigned = formdata.get('ticket-not-assigned');
@@ -31,6 +32,15 @@ export async function EditCampaign(prev: any, formdata: FormData) {
       - Order Unpaid: ${orderUnpaid}
     `);
 
+    const templateResponse = template
+      ? await getTemplateById(template)
+      : {
+          data: {
+            name: ''
+          }
+        };
+
+    console.log('template', templateResponse);
     const campaignData = {
       name: campaignName,
       status: clickedBtn === 'save' ? 'In-Progress' : 'sent',
@@ -43,6 +53,7 @@ export async function EditCampaign(prev: any, formdata: FormData) {
         ticketNotAssigned: ticketNotAssigned === 'on' ? true : false,
         orderUnpaid: orderUnpaid === 'on' ? true : false
       },
+      templateName: templateResponse.data.name,
       selectedTemplate: template,
       createdAt: FieldValue.serverTimestamp()
     };
