@@ -1,7 +1,6 @@
 'use server';
 
-import { db } from '@/lib/firebase/firebase_admin';
-import { serverTimestamp } from 'firebase/firestore';
+import { FieldValue, db } from '@/lib/firebase/firebase_admin';
 
 export async function EditCampaign(prev: any, formdata: FormData) {
   try {
@@ -17,33 +16,33 @@ export async function EditCampaign(prev: any, formdata: FormData) {
     const clickedBtn = formdata.get('button');
     const id = formdata.get('newid') as string | null;
 
-    console.log(
-      'check data',
-      delivery,
-      ticketNotCompleted,
-      noAccount, //on or null checkboxe
-      template,
-      ticketType,
-      campaignName,
-      selectedTicket,
-      ticketNotAssigned,
-      orderUnpaid
-    );
+    console.log(`
+      Check Data:
+      - Delivery: ${delivery}
+      - Ticket Not Completed: ${ticketNotCompleted}
+      - No Account: ${noAccount} (on or null checkbox)
+      - Template: ${template}
+      - Ticket Type: ${ticketType}
+      - Campaign Name: ${campaignName}
+      - Selected Ticket: ${selectedTicket}
+      - Ticket Not Assigned: ${ticketNotAssigned}
+      - Order Unpaid: ${orderUnpaid}
+    `);
 
     const campaignData = {
       name: campaignName,
-      status: clickedBtn == 'save' ? 'In-Progress' : 'complete',
+      status: clickedBtn == 'save' ? 'In-Progress' : 'sent',
       selectedTicket,
       ticketType,
       filter: {
         delivery,
-        noAccount,
-        ticketNotCompleted,
-        ticketNotAssigned,
-        orderUnpaid
+        noAccount: noAccount === 'on' ? true : false,
+        ticketNotCompleted: ticketNotCompleted === 'on' ? true : false,
+        ticketNotAssigned: ticketNotAssigned === 'on' ? true : false,
+        orderUnpaid: orderUnpaid === 'on' ? true : false
       },
       selectedTemplate: template,
-      createdAt: serverTimestamp()
+      createdAt: FieldValue.serverTimestamp()
     };
     if (id) {
       const campaignRef = db.collection('campaign').doc(id);

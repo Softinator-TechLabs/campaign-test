@@ -25,40 +25,34 @@ import { db } from '@/lib/firebase/firebase_client';
 type Campaign = {
   id: string;
   name: string;
-  filters: string;
+  filter: object;
   type: string;
   recipients: string;
   status: string;
   template: string;
+  selectedTicket: string;
 };
 
 export function CampaignData({ offset }: { offset: number | null }) {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const router = useRouter();
 
   function onClick() {
     router.replace(`/?offset=${offset}`);
   }
 
-  // const test = async () => {
-  //   await fetch('/api/test');
-  // };
+  const test = async () => {
+    await fetch('/api/test');
+  };
   useEffect(() => {
-    // test();
+    test();
     const campaignsCollection = collection(db, 'campaigns');
     const unsubscribe = onSnapshot(campaignsCollection, (snapshot) => {
       const campaignData = snapshot.docs.map((doc) => {
         const data = doc.data();
-        return {
-          id: doc.id,
-          name: data.name || '',
-          filters: data.filters || '',
-          type: data.type || '',
-          recipients: data.recipients || '',
-          status: data.status || '',
-          template: data.template || ''
-        };
-      }) as Campaign[];
+        return { ...data };
+      });
+      console.log('campaignData: ' + JSON.stringify(campaignData));
       setCampaigns(campaignData);
     });
 
@@ -100,17 +94,23 @@ export function CampaignData({ offset }: { offset: number | null }) {
   );
 }
 
-function TableBodyComponent({ campaigns }: { campaigns: Campaign[] }) {
+function TableBodyComponent({ campaigns }: { campaigns: any[] }) {
   return (
     <>
-      {campaigns.map((campaign) => (
-        <TableRow key={campaign.id}>
+      {campaigns.map((campaign, index) => (
+        <TableRow key={index}>
           <TableCell>{campaign.name}</TableCell>
-          <TableCell>{campaign.filters}</TableCell>
-          <TableCell>{campaign.type}</TableCell>
+          <TableCell>
+            {campaign?.filter
+              ? Object.entries(campaign.filter)
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(', ')
+              : ''}
+          </TableCell>
+          <TableCell>{campaign.selectedTicket}</TableCell>
           <TableCell>{campaign.recipients}</TableCell>
           <TableCell>{campaign.status}</TableCell>
-          <TableCell>{campaign.template}</TableCell>
+          <TableCell>{campaign.selectedTemplate}</TableCell>
           <TableCell>
             <DropdownMenu>
               <DropdownMenuTrigger>

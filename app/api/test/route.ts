@@ -11,6 +11,24 @@ type userType = {
 
 export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
+  try {
+    const campaignCollection = db.collection('campaigns');
+    const snapshot = await campaignCollection.get();
+
+    if (snapshot.empty) {
+      console.log('No matching documents.');
+    }
+
+    const campaigns: any[] = [];
+    snapshot.forEach((doc) => {
+      campaigns.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log('Campaigns:', campaigns);
+  } catch (error) {
+    console.error('Error getting documents:', error);
+  }
+
   // try {
   //   // Create the user
   //   const userRecord = await auth.createUser({
@@ -38,24 +56,24 @@ export async function GET(request: Request) {
   //   console.error('Error creating new user:', error);
   // }
 
-  try {
-    const campaignCollection = db.collection('campaigns');
-    const snapshot = await campaignCollection.get();
+  // try {
+  //   const campaignCollection = db.collection('campaigns');
+  //   const snapshot = await campaignCollection.get();
 
-    if (snapshot.empty) {
-      console.log('No matching documents.');
-      return;
-    }
+  //   if (snapshot.empty) {
+  //     console.log('No matching documents.');
+  //     return;
+  //   }
 
-    const campaigns: any[] = [];
-    snapshot.forEach((doc) => {
-      campaigns.push({ id: doc.id, ...doc.data() });
-    });
+  //   const campaigns: any[] = [];
+  //   snapshot.forEach((doc) => {
+  //     campaigns.push({ id: doc.id, ...doc.data() });
+  //   });
 
-    console.log('Campaigns:', campaigns);
-  } catch (error) {
-    console.error('Error getting documents:', error);
-  }
+  //   console.log('Campaigns:', campaigns);
+  // } catch (error) {
+  //   console.error('Error getting documents:', error);
+  // }
 
   // auth
   //   .getUserByEmail('anand@softinator.com')
